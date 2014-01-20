@@ -1,6 +1,5 @@
 package jp.co.skyhobbit.kaerumail {
-	
-	
+
 	public class Utility {
 		
 		public static function getHHMM(minutes:Number):String {

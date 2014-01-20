@@ -5,101 +5,41 @@
 
 	<fx:Script>
 		<![CDATA[
-			import flash.net.navigateToURL;
-			
 			import mx.collections.ArrayList;
 			
-			import spark.components.Button;
-			
-			import jp.co.skyhobbit.kaerumail.Constants;
+			import jp.co.skyhobbit.kaerumail.Husband;
 			import jp.co.skyhobbit.kaerumail.Utility;
+			import jp.co.skyhobbit.kaerumail.View;
 			import jp.co.skyhobbit.kaerumail.Wife;
 			
-			public var buttons:Vector.<Button> = new Vector.<Button>;
-			
+			public var view:View;
+			public var husband:Husband;
 			public var wife:Wife;
 
 			private function main():void {
-				
+				husband = new Husband();
 				wife = new Wife();
-				rememberMailAddress();
+				husband.rememberMailAddress(wife);
 				
-				makeScreen();
+				view = new View();
+				view.makeScreen(stage.stageWidth, stage.stageHeight);
+				view.setEvent(mail_minutes);
 				stage.addEventListener(Event.RESIZE, onResizeLayout);
-				
-				var dataItems:ArrayList = new ArrayList([buttons[0], buttons[1], buttons[2], buttons[3], buttons[4], buttons[5], wife.mailAddressLabel, wife.mailAddress]);
-				dataGroup.dataProvider = dataItems;
-			}
-			
-			private function makeScreen():void {
-				for (var i:int = 0; i < Constants.MAX_BUTTON; i++) {
-					buttons[i] = new Button();
-					buttons[i].id = ((i + 1) * 10).toString();
-					buttons[i].x = stage.stageWidth * 0.1 * i;
-					buttons[i].y = stage.stageHeight * 0.2 * i;
-					buttons[i].width = stage.stageWidth * 0.8;
-					buttons[i].height = stage.stageHeight * 0.08;
-					buttons[i].label= ((i + 1) * 10) + "分後";
-					if (((i + 1) % 6) == 0) {
-						buttons[i].label= (((i + 1) * 10) / 60) + "時間後";
-					}
-					buttons[i].addEventListener(MouseEvent.CLICK, mail_minutes);
-				}
-			}
-
-			private function rememberMailAddress():void {
-				const DEFAULT_MAIL_ADDRESS:String = "宛先メールアドレスを書いてください.";
-				
-				var path:File = File.applicationStorageDirectory.resolvePath(Constants.DATA_FILE);
-				var fs:FileStream = new FileStream();
-				
-				try {
-					fs.open(path, FileMode.READ);
-					wife.mailAddress.text = fs.readUTF();
-				} catch (error:Error) {
-					wife.mailAddress.text = DEFAULT_MAIL_ADDRESS;
-				} finally {
-					fs.close();
-				}
+				dataGroup.dataProvider = new ArrayList([view.buttons[0], view.buttons[1], view.buttons[2], view.buttons[3], view.buttons[4], view.buttons[5], wife.mailAddressLabel, wife.mailAddress]);
 			}
 			
 			private function mail_minutes(mouseEvent:MouseEvent):void {
 				var minute:int = mouseEvent.currentTarget.id;
-				sendMail (wife.mailAddress.text, Utility.getHHMM(minute));
+				husband.sendMail(wife.mailAddress.text, Utility.getHHMM(minute));
 			}
-
-			/**
-			 * メールソフトを呼び出す。
-			 * http://jmsnews.blog38.fc2.com/blog-entry-13.html
-			 */
-			private function sendMail(toAddress:String, subject:String):void {
-				var returnMessage:String;
-				if (Math.random() * 100 < 80) {
-					returnMessage = "帰ります。";
-				} else {
-					returnMessage = "帰るよ。いつもありがとね。";
-				}
-				
-				var urlString:String = "mailto:" + toAddress + "?subject=" + subject + "&body=" + returnMessage;
-				var url:URLRequest = new URLRequest(urlString);
-				navigateToURL(url ,"_self");
-			}
-
+			
 			private function onResizeLayout(evt:Event):void {
-				trace("Resizeイベント発生");
-				resizeLayout();
-			}
-
-			private function resizeLayout():void {
 				wife.resizeLayout(stage.stageWidth, stage.stageHeight);
-				
 				wife.mailAddress.x = stage.stageWidth * 0.1;
 				wife.mailAddress.y = stage.stageHeight * 0.1;
 				wife.mailAddress.width = stage.stageWidth * 0.8;
 			}
-
 		]]>
-
 	</fx:Script>
 
 	<fx:Declarations>
