@@ -1,169 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
 			   xmlns:s="library://ns.adobe.com/flex/spark"
 			   applicationComplete="main()">
-	
+
 	<fx:Script>
 		<![CDATA[
+			import flash.net.navigateToURL;
 			
-			private function main():void{
+			import mx.collections.ArrayList;
+			
+			import spark.components.Button;
+			import spark.components.Label;
+			import spark.components.TextInput;
+			
+			import jp.co.skyhobbit.kaerumail.Constants;
+			import jp.co.skyhobbit.kaerumail.KaeruMailMain;
+
+			public var buttons:Vector.<Button> = new Vector.<Button>;
+
+			public var toMailAddressLabel:Label;
+			public var toMailAddress:TextInput;
+
+			public function main():void {
 				//stage.scaleMode = StageScaleMode.NO_SCALE;
 				//stage.align = StageAlign.TOP_LEFT;
-				resizeLayout();
-				
+
+				for (var i:int = 0; i < Constants.MAX_BUTTON; i++) {
+					buttons[i] = new Button();
+					buttons[i].id = ((i + 1) * 10).toString();
+					buttons[i].x = stage.stageWidth * 0.1 * i;
+					buttons[i].y = stage.stageHeight * 0.2 * i;
+					buttons[i].width = stage.stageWidth * 0.8;
+					buttons[i].height = stage.stageHeight * 0.08;
+					buttons[i].label= ((i + 1) * 10) + "分後";
+					if (((i + 1) % 6) == 0) {
+						buttons[i].label= (((i + 1) * 10) / 60) + "時間後";
+					}
+					//buttons[i].addEventListener(KaeruMailMouseEvent.KAERU_MAIL_PUSHED, mail_minutes);
+					buttons[i].addEventListener(MouseEvent.CLICK, mail_minutes);
+				}
+
+				toMailAddressLabel = new Label();
+				toMailAddressLabel.text ="宛先メールアドレス";
+				toMailAddress = new TextInput();
+				toMailAddress.text = "";
+
 				loadMailAddress();
-				
 				stage.addEventListener(Event.RESIZE, onResizeLayout);
-				
 				toMailAddress.addEventListener(FocusEvent.FOCUS_OUT, saveMailAddress);
+
+				var main:KaeruMailMain = new KaeruMailMain();
+
+				var dataItems:ArrayList = new ArrayList([buttons[0], buttons[1], buttons[2], buttons[3], buttons[4], buttons[5], toMailAddressLabel, toMailAddress]);
+				dataGroup.dataProvider = dataItems;
 			}
-			
+
 			private function loadMailAddress():void {
-				var path:File = File.applicationStorageDirectory.resolvePath("kaerumail.txt");
+				const DEFAULT_MAIL_ADDRESS:String = "宛先メールアドレスを書いてください.";
+
+				var path:File = File.applicationStorageDirectory.resolvePath(Constants.DATA_FILE);
 				var fs:FileStream = new FileStream();
+
 				try {
 					fs.open(path, FileMode.READ);
 					toMailAddress.text = fs.readUTF();
-				}
-				catch(error:Error) {
-					toMailAddress.text = "宛先メールアドレスを書いてください." 
-				}
-				finally {
+				} catch (error:Error) {
+					toMailAddress.text  =DEFAULT_MAIL_ADDRESS;
+				} finally {
 					fs.close();
 				}
 			}
-			
+
 			private function saveMailAddress(evt:Event):void {
-				trace("FocusOutイベント発生");
-				var path:File = File.applicationStorageDirectory.resolvePath("kaerumail.txt");
+				var path:File = File.applicationStorageDirectory.resolvePath(Constants.DATA_FILE);
 				var fs:FileStream = new FileStream();
 				fs.open(path, FileMode.WRITE);
 				fs.writeUTF(toMailAddress.text);
 				fs.close();
 			}
 
-			
-			private function mail_10minutes(event:MouseEvent):void
-			{
-				sendMail (toMailAddress.text, getHHMM(10));
-			}
-			private function mail_20minutes(event:MouseEvent):void
-			{
-				sendMail (toMailAddress.text, getHHMM(20));
-			}
-			private function mail_30minutes(event:MouseEvent):void
-			{
-				sendMail (toMailAddress.text, getHHMM(30));
-			}
-			private function mail_40minutes(event:MouseEvent):void
-			{
-				sendMail (toMailAddress.text, getHHMM(40));
-			}
-			private function mail_50minutes(event:MouseEvent):void
-			{
-				sendMail (toMailAddress.text, getHHMM(50));
-			}
-			private function mail_60minutes(event:MouseEvent):void
-			{
-				sendMail (toMailAddress.text, getHHMM(60));
+			private function mail_minutes(mouseEvent:MouseEvent):void {
+				var minute:int = mouseEvent.currentTarget.id;
+				sendMail (toMailAddress.text, getHHMM(minute));
 			}
 			
 			/**
 			 * メールソフトを呼び出す。
 			 * http://jmsnews.blog38.fc2.com/blog-entry-13.html
 			 */
-			private function sendMail(toAddress:String, subject:String):void
-			{
+			private function sendMail(toAddress:String, subject:String):void {
 				var returnMessage:String;
 				if (Math.random() * 100 < 80) {
 					returnMessage = "帰ります。";
 				} else {
 					returnMessage = "帰るよ。いつもありがとね。";
 				}
-				
+
 				var urlString:String = "mailto:" + toAddress + "?subject=" + subject + "&body=" + returnMessage;
 				var url:URLRequest = new URLRequest(urlString);
 				navigateToURL(url ,"_self");
 			}
-			
-			private function getHHMM(minutes:Number):String
-			{
+
+			private function getHHMM(minutes:Number):String {
 				var dateObject:Date = new Date();
 				var hh:Number = dateObject.getHours();
 				var mm:Number = dateObject.getMinutes();
 				var rounding:Number = 10; // 切り上げ。分を切りの良い数値にするため。
 				mm += minutes;
 				mm = int((mm + rounding - 1) / rounding) * rounding;
-				if (mm >= 60) 
-				{
+				if (mm >= 60) {
 					hh += 1;
 					mm -= 60;
 				}
-				if (hh >= 24) 
-				{
+				if (hh >= 24) {
 					hh -= 24;
 				}
 				return (("0" + hh.toString()).substr(-2) + ("0" + mm.toString()).substr(-2)); // 前ゼロを付加する。
 			}
-			
-			private function onResizeLayout(evt:Event):void
-			{
+
+			private function onResizeLayout(evt:Event):void {
 				trace("Resizeイベント発生");
 				resizeLayout();
 			}
-			
-			private function resizeLayout():void
-			{
+
+			private function resizeLayout():void {
 				toMailAddressLabel.x = stage.stageWidth * 0.1;
 				toMailAddressLabel.y = stage.stageHeight * 0.1 - toMailAddressLabel.height;
-				
+
 				toMailAddress.x = stage.stageWidth * 0.1;
 				toMailAddress.y = stage.stageHeight * 0.1;
 				toMailAddress.width = stage.stageWidth * 0.8;
-				
-				button10.x = stage.stageWidth * 0.1;
-				button10.y = stage.stageHeight * 0.2;
-				button10.width = stage.stageWidth * 0.8;
-				button10.height = stage.stageHeight * 0.08;				
-				
-				button20.x = stage.stageWidth * 0.1;
-				button20.y = stage.stageHeight * 0.3;
-				button20.width = stage.stageWidth * 0.8;
-				button20.height = stage.stageHeight * 0.08;
-				
-				button30.x = stage.stageWidth * 0.1;
-				button30.y = stage.stageHeight * 0.4;
-				button30.width = stage.stageWidth * 0.8;
-				button30.height = stage.stageHeight * 0.08;
-				
-				button40.x = stage.stageWidth * 0.1;
-				button40.y = stage.stageHeight * 0.5;
-				button40.width = stage.stageWidth * 0.8;
-				button40.height = stage.stageHeight * 0.08;
-				
-				button50.x = stage.stageWidth * 0.1;
-				button50.y = stage.stageHeight * 0.6;
-				button50.width = stage.stageWidth * 0.8;
-				button50.height = stage.stageHeight * 0.08;
-				
-				button60.x = stage.stageWidth * 0.1;
-				button60.y = stage.stageHeight * 0.7;
-				button60.width = stage.stageWidth * 0.8;
-				button60.height = stage.stageHeight * 0.08;
-								
 			}
 		]]>
 	</fx:Script>
-	
+
 	<fx:Declarations>
 		<!-- 非ビジュアルエレメント (サービス、値オブジェクトなど) をここに配置 -->
 	</fx:Declarations>
-	<s:Button id="button10" x="74" y="65" width="332" height="69" label="10分後" click="mail_10minutes(event)"/>
-	<s:Button id="button20" x="74" y="142" width="332" height="69" label="20分後" click="mail_20minutes(event)"/>
-	<s:Button id="button30" x="74" y="219" width="332" height="69" label="30分後" click="mail_30minutes(event)"/>
-	<s:Button id="button40" x="74" y="296" width="332" height="69" label="40分後" click="mail_40minutes(event)"/>
-	<s:Button id="button50" x="74" y="373" width="332" height="69" label="50分後" click="mail_50minutes(event)"/>
-	<s:Button id="button60" x="73" y="454" width="332" height="69" label="1時間後" click="mail_60minutes(event)"/>
-	<s:Label id="toMailAddressLabel" x="23" y="593" text="宛先メールアドレス"/>
-	<s:TextInput id="toMailAddress" x="20" y="642" text=""/>
+	<s:DataGroup id="dataGroup"
+				 verticalCenter="0"
+				 horizontalCenter="0">
+
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+
+	</s:DataGroup>
 </s:Application>
