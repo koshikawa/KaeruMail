@@ -10,21 +10,28 @@
 			import mx.collections.ArrayList;
 			
 			import spark.components.Button;
-			import spark.components.Label;
-			import spark.components.TextInput;
 			
 			import jp.co.skyhobbit.kaerumail.Constants;
-			import jp.co.skyhobbit.kaerumail.KaeruMailMain;
-
+			import jp.co.skyhobbit.kaerumail.Utility;
+			import jp.co.skyhobbit.kaerumail.Wife;
+			
 			public var buttons:Vector.<Button> = new Vector.<Button>;
+			
+			public var wife:Wife;
 
-			public var toMailAddressLabel:Label;
-			public var toMailAddress:TextInput;
-
-			public function main():void {
-				//stage.scaleMode = StageScaleMode.NO_SCALE;
-				//stage.align = StageAlign.TOP_LEFT;
-
+			private function main():void {
+				
+				wife = new Wife();
+				rememberMailAddress();
+				
+				makeScreen();
+				stage.addEventListener(Event.RESIZE, onResizeLayout);
+				
+				var dataItems:ArrayList = new ArrayList([buttons[0], buttons[1], buttons[2], buttons[3], buttons[4], buttons[5], wife.mailAddressLabel, wife.mailAddress]);
+				dataGroup.dataProvider = dataItems;
+			}
+			
+			private function makeScreen():void {
 				for (var i:int = 0; i < Constants.MAX_BUTTON; i++) {
 					buttons[i] = new Button();
 					buttons[i].id = ((i + 1) * 10).toString();
@@ -36,54 +43,31 @@
 					if (((i + 1) % 6) == 0) {
 						buttons[i].label= (((i + 1) * 10) / 60) + "時間後";
 					}
-					//buttons[i].addEventListener(KaeruMailMouseEvent.KAERU_MAIL_PUSHED, mail_minutes);
 					buttons[i].addEventListener(MouseEvent.CLICK, mail_minutes);
 				}
-
-				toMailAddressLabel = new Label();
-				toMailAddressLabel.text ="宛先メールアドレス";
-				toMailAddress = new TextInput();
-				toMailAddress.text = "";
-
-				loadMailAddress();
-				stage.addEventListener(Event.RESIZE, onResizeLayout);
-				toMailAddress.addEventListener(FocusEvent.FOCUS_OUT, saveMailAddress);
-
-				var main:KaeruMailMain = new KaeruMailMain();
-
-				var dataItems:ArrayList = new ArrayList([buttons[0], buttons[1], buttons[2], buttons[3], buttons[4], buttons[5], toMailAddressLabel, toMailAddress]);
-				dataGroup.dataProvider = dataItems;
 			}
 
-			private function loadMailAddress():void {
+			private function rememberMailAddress():void {
 				const DEFAULT_MAIL_ADDRESS:String = "宛先メールアドレスを書いてください.";
-
+				
 				var path:File = File.applicationStorageDirectory.resolvePath(Constants.DATA_FILE);
 				var fs:FileStream = new FileStream();
-
+				
 				try {
 					fs.open(path, FileMode.READ);
-					toMailAddress.text = fs.readUTF();
+					wife.mailAddress.text = fs.readUTF();
 				} catch (error:Error) {
-					toMailAddress.text  =DEFAULT_MAIL_ADDRESS;
+					wife.mailAddress.text = DEFAULT_MAIL_ADDRESS;
 				} finally {
 					fs.close();
 				}
 			}
-
-			private function saveMailAddress(evt:Event):void {
-				var path:File = File.applicationStorageDirectory.resolvePath(Constants.DATA_FILE);
-				var fs:FileStream = new FileStream();
-				fs.open(path, FileMode.WRITE);
-				fs.writeUTF(toMailAddress.text);
-				fs.close();
-			}
-
+			
 			private function mail_minutes(mouseEvent:MouseEvent):void {
 				var minute:int = mouseEvent.currentTarget.id;
-				sendMail (toMailAddress.text, getHHMM(minute));
+				sendMail (wife.mailAddress.text, Utility.getHHMM(minute));
 			}
-			
+
 			/**
 			 * メールソフトを呼び出す。
 			 * http://jmsnews.blog38.fc2.com/blog-entry-13.html
@@ -95,27 +79,10 @@
 				} else {
 					returnMessage = "帰るよ。いつもありがとね。";
 				}
-
+				
 				var urlString:String = "mailto:" + toAddress + "?subject=" + subject + "&body=" + returnMessage;
 				var url:URLRequest = new URLRequest(urlString);
 				navigateToURL(url ,"_self");
-			}
-
-			private function getHHMM(minutes:Number):String {
-				var dateObject:Date = new Date();
-				var hh:Number = dateObject.getHours();
-				var mm:Number = dateObject.getMinutes();
-				var rounding:Number = 10; // 切り上げ。分を切りの良い数値にするため。
-				mm += minutes;
-				mm = int((mm + rounding - 1) / rounding) * rounding;
-				if (mm >= 60) {
-					hh += 1;
-					mm -= 60;
-				}
-				if (hh >= 24) {
-					hh -= 24;
-				}
-				return (("0" + hh.toString()).substr(-2) + ("0" + mm.toString()).substr(-2)); // 前ゼロを付加する。
 			}
 
 			private function onResizeLayout(evt:Event):void {
@@ -124,14 +91,15 @@
 			}
 
 			private function resizeLayout():void {
-				toMailAddressLabel.x = stage.stageWidth * 0.1;
-				toMailAddressLabel.y = stage.stageHeight * 0.1 - toMailAddressLabel.height;
-
-				toMailAddress.x = stage.stageWidth * 0.1;
-				toMailAddress.y = stage.stageHeight * 0.1;
-				toMailAddress.width = stage.stageWidth * 0.8;
+				wife.resizeLayout(stage.stageWidth, stage.stageHeight);
+				
+				wife.mailAddress.x = stage.stageWidth * 0.1;
+				wife.mailAddress.y = stage.stageHeight * 0.1;
+				wife.mailAddress.width = stage.stageWidth * 0.8;
 			}
+
 		]]>
+
 	</fx:Script>
 
 	<fx:Declarations>
