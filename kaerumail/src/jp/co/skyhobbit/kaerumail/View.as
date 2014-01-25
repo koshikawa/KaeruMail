@@ -18,7 +18,7 @@ package jp.co.skyhobbit.kaerumail {
 			for (var i:int = 0; i < Constants.MAX_BUTTON; i++) {
 				buttons[i] = new Button();
 				buttons[i].id = ((i + 1) * 10).toString();
-				buttons[i].x = stageWidth * 0.1 * i;
+				buttons[i].x = stageWidth * 0.1;
 				buttons[i].y = stageHeight * 0.2 * i;
 				buttons[i].width = stageWidth * 0.8;
 				buttons[i].height = stageHeight * 0.08;
