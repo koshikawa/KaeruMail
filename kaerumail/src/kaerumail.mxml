@@ -6,12 +6,12 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.collections.ArrayList;
-			
+
 			import jp.co.skyhobbit.kaerumail.Husband;
 			import jp.co.skyhobbit.kaerumail.Utility;
 			import jp.co.skyhobbit.kaerumail.View;
 			import jp.co.skyhobbit.kaerumail.Wife;
-			
+
 			public var view:View;
 			public var husband:Husband;
 			public var wife:Wife;
@@ -20,24 +20,24 @@
 				husband = new Husband();
 				wife = new Wife();
 				husband.rememberMailAddress(wife);
-				
-				view = new View();
-				view.makeScreen(stage.stageWidth, stage.stageHeight);
-				view.setEvent(mail_minutes);
+
+				view = new View(mail_minutes);
+				view.resizeLayout(stage.stageWidth, stage.stageHeight);
 				stage.addEventListener(Event.RESIZE, onResizeLayout);
+				onResizeLayout();
 				dataGroup.dataProvider = new ArrayList([view.buttons[0], view.buttons[1], view.buttons[2], view.buttons[3], view.buttons[4], view.buttons[5], wife.mailAddressLabel, wife.mailAddress]);
 			}
-			
+
 			private function mail_minutes(mouseEvent:MouseEvent):void {
 				var minute:int = mouseEvent.currentTarget.id;
 				husband.sendMail(wife.mailAddress.text, Utility.getHHMM(minute));
 			}
-			
-			private function onResizeLayout(evt:Event):void {
+
+			private function onResizeLayout(event:Event=null):void {
 				wife.resizeLayout(stage.stageWidth, stage.stageHeight);
 				wife.mailAddress.x = stage.stageWidth * 0.1;
-				wife.mailAddress.y = stage.stageHeight * 0.1;
 				wife.mailAddress.width = stage.stageWidth * 0.8;
+				view.resizeLayout(stage.stageWidth, stage.stageHeight);
 			}
 		]]>
 	</fx:Script>

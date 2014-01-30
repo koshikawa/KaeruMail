@@ -28,6 +28,10 @@ package jp.co.skyhobbit.kaerumail {
 			fs.close();
 		}
 		
+		public function resizeLayout(stageWidth:int, stageHeight:int):void {
+			mailAddressLabel.x = stageWidth * 0.1;
+		}
+		
 		public function get mailAddress():TextInput
 		{
 			return _mailAddress;
@@ -36,11 +40,6 @@ package jp.co.skyhobbit.kaerumail {
 		public function set mailAddress(value:TextInput):void
 		{
 			_mailAddress = value;
-		}
-
-		public function resizeLayout(stageWidth:int, stageHeight:int):void {
-			mailAddressLabel.x = stageWidth * 0.1;
-			mailAddressLabel.y = stageHeight * 0.1 - mailAddressLabel.height;
 		}
 
 		public function set mailAddressLabel(value:Label):void
