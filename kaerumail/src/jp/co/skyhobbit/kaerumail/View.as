@@ -1,4 +1,5 @@
 package jp.co.skyhobbit.kaerumail {
+	import flash.display.Stage;
 	import flash.events.MouseEvent;
 	
 	import spark.components.Button;
@@ -18,14 +19,6 @@ package jp.co.skyhobbit.kaerumail {
 			}
 		}
 		
-		public function resizeLayout(stageWidth:int, stageHeight:int):void {
-			for (var i:int = 0; i < Constants.MAX_BUTTON; i++) {
-				buttons[i].x = stageWidth * 0.1;
-				buttons[i].width = stageWidth * 0.8;
-				buttons[i].height = stageHeight * 0.1;
-			}
-		}
-		
 		public function get buttons():Vector.<Button> {
 			return _buttons;
 		}
@@ -34,5 +27,17 @@ package jp.co.skyhobbit.kaerumail {
 			_buttons = value;
 		}
 		
+		public function onResizeLayout(wife:Wife, stage:Stage):void {
+			wife.resizeLayout(stage.stageWidth, stage.stageHeight);
+			resizeLayout(stage.stageWidth, stage.stageHeight);
+		}
+		
+		public function resizeLayout(stageWidth:int, stageHeight:int):void {
+			for (var i:int = 0; i < Constants.MAX_BUTTON; i++) {
+				buttons[i].x = stageWidth * 0.1;
+				buttons[i].width = stageWidth * 0.8;
+				buttons[i].height = stageHeight * 0.1;
+			}
+		}
 	}
 }

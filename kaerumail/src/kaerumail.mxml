@@ -25,7 +25,7 @@
 				view.resizeLayout(stage.stageWidth, stage.stageHeight);
 				stage.addEventListener(Event.RESIZE, onResizeLayout);
 				onResizeLayout();
-				dataGroup.dataProvider = new ArrayList([view.buttons[0], view.buttons[1], view.buttons[2], view.buttons[3], view.buttons[4], view.buttons[5], wife.mailAddressLabel, wife.mailAddress]);
+				dataGroup.dataProvider = new ArrayList([wife.mailAddressLabel, wife.mailAddress, view.buttons[0], view.buttons[1], view.buttons[2], view.buttons[3], view.buttons[4], view.buttons[5]]);
 			}
 
 			private function mail_minutes(mouseEvent:MouseEvent):void {
@@ -35,8 +35,6 @@
 
 			private function onResizeLayout(event:Event=null):void {
 				wife.resizeLayout(stage.stageWidth, stage.stageHeight);
-				wife.mailAddress.x = stage.stageWidth * 0.1;
-				wife.mailAddress.width = stage.stageWidth * 0.8;
 				view.resizeLayout(stage.stageWidth, stage.stageHeight);
 			}
 		]]>
