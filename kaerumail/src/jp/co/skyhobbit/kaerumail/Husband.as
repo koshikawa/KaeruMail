@@ -7,6 +7,9 @@ package jp.co.skyhobbit.kaerumail {
 
 	public class Husband {
 
+		/**
+		 * 妻のメールアドレスを思い出す。
+		 */
 		public function rememberMailAddress(wife:Wife):void {
 			const DEFAULT_MAIL_ADDRESS:String = "宛先メールアドレスを書いてください.";
 
