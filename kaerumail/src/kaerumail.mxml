@@ -8,7 +8,7 @@
 			import mx.collections.ArrayList;
 
 			import jp.co.skyhobbit.kaerumail.Husband;
-			import jp.co.skyhobbit.kaerumail.Utility;
+			import jp.co.skyhobbit.kaerumail.Clock;
 			import jp.co.skyhobbit.kaerumail.View;
 			import jp.co.skyhobbit.kaerumail.Wife;
 
@@ -30,7 +30,7 @@
 
 			private function mail_minutes(mouseEvent:MouseEvent):void {
 				var minute:int = mouseEvent.currentTarget.id;
-				husband.sendMail(wife.mailAddress.text, Utility.getHHMM(minute));
+				husband.sendMail(wife.mailAddress.text, Clock.getHHMM(minute));
 			}
 
 			private function onResizeLayout(event:Event=null):void {

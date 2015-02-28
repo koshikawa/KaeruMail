@@ -1,6 +1,6 @@
 package jp.co.skyhobbit.kaerumail {
 
-	public class Utility {
+	public class Clock {
 		
 		public static function getHHMM(minutes:Number):String {
 			const MINUTES_UNIT:int = 10; // 分を切りの良い数値にするための単位。
