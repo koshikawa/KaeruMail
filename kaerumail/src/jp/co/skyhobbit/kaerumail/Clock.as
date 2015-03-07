@@ -7,7 +7,7 @@ package jp.co.skyhobbit.kaerumail {
 		/**
 		 * 帰宅時間を返す。
 		 */
-		public static function getHHMM(minutes:Number):String {
+		public static function getHHMM(minutes:Number, separator:Boolean):String {
 			const MINUTES_UNIT:int = 10; // 分を切りの良い数値にするための単位。
 			
 			var dateObject:Date = new Date();
@@ -17,14 +17,22 @@ package jp.co.skyhobbit.kaerumail {
 			
 			hh = (hh + int(mm / 60)) % 24; 
 			mm = mm % 60;
-			return (("0" + hh.toString()).substr(-2) + separator() + ("0" + mm.toString()).substr(-2)); // 前ゼロを付加する。
+			return (twoColumn(hh) + separatorString(separator) + twoColumn(mm));
+		}
+		
+		private static function separatorString(separator:Boolean):String {
+			if (separator) {
+				return ":";
+			} else {
+				return "";
+			}
 		}
 		
 		/**
-		 * 時と分の区切りを返す。
+		 * 前ゼロを付けて2桁にする。
 		 */
-		private static function separator():String {
-			return ":";
+		private static function twoColumn(number:int):String {
+			return ("0" + number.toString()).substr(-2) 
 		}
 	}
 }
