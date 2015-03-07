@@ -6,9 +6,9 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.collections.ArrayList;
-
-			import jp.co.skyhobbit.kaerumail.Husband;
+			
 			import jp.co.skyhobbit.kaerumail.Clock;
+			import jp.co.skyhobbit.kaerumail.Husband;
 			import jp.co.skyhobbit.kaerumail.View;
 			import jp.co.skyhobbit.kaerumail.Wife;
 
@@ -25,12 +25,13 @@
 				view.resizeLayout(stage.stageWidth, stage.stageHeight);
 				stage.addEventListener(Event.RESIZE, onResizeLayout);
 				onResizeLayout();
-				dataGroup.dataProvider = new ArrayList([wife.mailAddressLabel, wife.mailAddress, view.buttons[0], view.buttons[1], view.buttons[2], view.buttons[3], view.buttons[4], view.buttons[5]]);
+				// 表示する項目
+				dataGroup.dataProvider = new ArrayList([wife.mailAddressLabel, wife.mailAddress, view.buttons[0], view.buttons[1], view.buttons[2], view.buttons[3], view.buttons[4], view.buttons[5], wife.timeSeparator]);
 			}
 
 			private function mail_minutes(mouseEvent:MouseEvent):void {
 				var minute:int = mouseEvent.currentTarget.id;
-				husband.sendMail(wife.mailAddress.text, Clock.getHHMM(minute));
+				husband.sendMail(wife.mailAddress.text, Clock.getHHMM(minute, wife.timeSeparator.selected));
 			}
 
 			private function onResizeLayout(event:Event=null):void {
