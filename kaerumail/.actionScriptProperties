@@ -49,7 +49,6 @@
           <pathEntry path="Default-568h@2x.png"/>
           <pathEntry path="Default@2x.png"/>
           <pathEntry path="blackberry-tablet.xml"/>
-          <pathEntry path=".DS_Store"/>
         </airExcludes>
         <anePaths/>
         <newLaunchParams/>
@@ -78,7 +77,6 @@
       <airSettings airCertificatePath="/Users/h070017/Dropbox/スカイホビット/iPhone開発用の証明書/リリース用/証明書.p12" airTimestamp="true" anePathSet="true" version="1">
         <airExcludes>
           <pathEntry path="blackberry-tablet.xml"/>
-          <pathEntry path=".DS_Store"/>
         </airExcludes>
         <anePaths/>
         <newLaunchParams/>
