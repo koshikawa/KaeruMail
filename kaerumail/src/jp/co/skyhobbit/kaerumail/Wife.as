@@ -21,7 +21,7 @@ package jp.co.skyhobbit.kaerumail {
 			mailAddress.text = "";
 			timeSeparator = new CheckBox();
 			timeSeparator.selected = true;
-			timeSeparator.label = "時と分の区切りにコロンを入れる";
+			timeSeparator.label = "時と分をコロンで区切る";
 			mailAddress.addEventListener(FocusEvent.FOCUS_OUT, saveMailAddress);
 		}
 
